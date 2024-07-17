@@ -1,0 +1,100 @@
+.board {
+    position: relative;
+    width: 400px; /* Largeur de votre board, ajustez selon vos besoins */
+    height: 400px; /* Hauteur de votre board, ajustez selon vos besoins */
+    background-size: cover; /* Ajuste la taille de l'image pour couvrir le board */
+    background-position: center; /* Centre l'image */
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* Répétez pour la taille de votre grille */
+    grid-gap: 2px; /* Espacement entre les tuiles */
+    margin-bottom: 20px;
+    
+}
+
+.tile {
+    width: 100%; /* Taille des tuiles */
+    height: 100%; /* Taille des tuiles */
+    border: 1px solid transparent; /* Bordure des tuiles, transparente pour l'instant */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Curseur indiquant que la tuile est cliquable */
+    border: 1px solid #000; 
+    aspect-ratio: 1/1;
+    position:relative;
+    background-size: contain;
+    background-position: center;
+}
+
+.tile.damaged::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background-image: url('/uploads/images/posters/Flamme.svg');
+    opacity: 1; /* Ajustez l'opacité selon vos besoins */
+    z-index: 3; /* Place l'effet au-dessus du fond et du navire */
+    background-size:cover;
+}
+
+.tile.targeted::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background-image: url('/uploads/images/posters/Target.svg');
+    opacity: 1; /* Ajustez l'opacité selon vos besoins */
+    z-index: 99; /* Place l'effet au-dessus du fond et du navire */
+    background-size:cover;
+}
+
+.tile.miss::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background-image: url('/uploads/images/posters/Plouf.svg');
+    opacity: 1; /* Ajustez l'opacité selon vos besoins */
+    z-index: 99; /* Place l'effet au-dessus du fond et du navire */
+    background-size:cover;
+}
+
+.tile img{
+
+    height: 100%;
+    position:absolute;
+    z-index: 0;
+}
+
+.tile .V{
+    top:0;
+}
+
+.tile .H{
+    left:0;
+}
+
+.tile .carrier {
+    width: 500%;
+}
+.tile .battleship {
+    width: 400%
+}
+.tile .Cruiser {
+    width: 300%
+}
+.tile .submarine {
+    width:300%
+}
+.tile .destroyer {
+    width: 200%
+}

@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Repository\BoardRepository;
+use Doctrine\ORM\EntityManager;
 use App\Repository\ShipRepository;
 use App\Repository\TileRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class GameController extends AbstractController
@@ -24,10 +26,11 @@ class GameController extends AbstractController
         return $this->render('game/game.html.twig');
     }
 
-    #[Route('/reset', name: 'app_reset')]
+    #[Route('/game/reset', name: 'app_reset')]
     public function reset(
         ShipRepository $shipRepository,
-        TileRepository $tileRepository
+        TileRepository $tileRepository,
+        EntityManager $entityManager
     ): Response {
     // Réanitialiser toutes les données existantes
     $ships = $shipRepository->findAll();
@@ -62,6 +65,22 @@ class GameController extends AbstractController
     foreach ($nonEmptyTiles as $tile) {
         $tile->setStatus('empty');
     }
+    $entityManager->flush();
+
         return $this->redirectToRoute('app_game'); // Rediriger vers la page d'accueil
+
+    }
+
+    #[Route('/game/board', name: 'app_board')]
+    public function game(BoardRepository $boardRepository): Response
+    {
+        // Fetch the boards by their names or any unique identifier
+        $playerBoard = $boardRepository->findOneBy(['name' => 'player']);
+        $enemyBoard = $boardRepository->findOneBy(['name' => 'ia']);
+
+        return $this->render('game/board.html.twig', [
+            'playerBoard' => $playerBoard,
+            'iaBoard' => $enemyBoard,
+        ]);
     }
 }

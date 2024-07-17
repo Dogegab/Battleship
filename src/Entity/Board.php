@@ -21,6 +21,9 @@ class Board
     #[ORM\OneToMany(mappedBy: 'board', targetEntity: Ship::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $ships;
 
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
     public function __construct()
     {
         $this->tiles = new ArrayCollection();
@@ -88,6 +91,18 @@ class Board
                 $ship->setBoard(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }

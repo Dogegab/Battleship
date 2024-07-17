@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Combattez</h1>
+
+    <div>
+        <h2>Votre flotte</h2>
+        <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
+            {% for tile in playerBoard.tiles %}
+                <div class="tile {% if tile.status == 'miss' %}miss{% elseif tile.status == 'damaged' %}damaged{% elseif tile.status == 'targeted' %}targeted{% endif %}">
+                    {% for ship in playerBoard.ships %}
+                        {% set startRow = ship.startRow %}
+                        {% set startCol = ship.startCol %}
+                        {% set size = ship.size %}
+
+                        {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
+                        {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
+
+                        {% if (ship.orientation == 'H' and tile.x == startRow and tile.y >= startCol and tile.y <= endCol) or
+                              (ship.orientation == 'V' and tile.y == startCol and tile.x >= startRow and tile.x <= endRow) %}
+                            {% if (ship.orientation == 'H' and tile.y == startCol) or
+                                  (ship.orientation == 'V' and tile.x == startRow) %}
+                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <h2>Flotte ennemie</h2>
+        <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
+            {% for tile in iaBoard.tiles %}
+                <div class="tile {% if tile.status == 'miss' %}miss{% elseif tile.status == 'damaged' %}damaged{% elseif tile.status == 'targeted' %}targeted{% endif %}">
+                    {% for ship in iaBoard.ships %}
+                        {% set startRow = ship.startRow %}
+                        {% set startCol = ship.startCol %}
+                        {% set size = ship.size %}
+
+                        {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
+                        {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
+
+                        {% if (ship.orientation == 'H' and tile.x == startRow and tile.y >= startCol and tile.y <= endCol) or
+                              (ship.orientation == 'V' and tile.y == startCol and tile.x >= startRow and tile.x <= endRow) %}
+                            {% if (ship.orientation == 'H' and tile.y == startCol) or
+                                  (ship.orientation == 'V' and tile.x == startRow) %}
+                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
