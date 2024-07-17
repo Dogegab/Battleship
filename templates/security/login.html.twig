@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Battleship: Login{% endblock %}
+
+{% block body %}
+<form method="post">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+
+
+    <h1 class="h3 mb-3 font-weight-normal">Connectez-vous pour accéder au jeu !</h1>
+    <label for="inputEmail">Email</label>
+    <div class="field">
+        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+        <label for="inputPassword">Password</label>
+    </div>
+    <div class="field">
+        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+    </div>
+
+    <input type="hidden" name="_csrf_token"
+           value="{{ csrf_token('authenticate') }}"
+    >
+
+    <div class="checkbox mb-3">
+        <label>
+            <input type="checkbox" name="_remember_me"> Se rappeler de moi
+        </label>
+    </div>
+    {% if app.user %}
+        <div class="mb-3">
+            Vous êtes connecté avec ce mail: {{ app.user.userIdentifier }} <a class="btn btn-lg btn-primary" href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    <button class="btn btn-lg btn-primary" type="submit">
+        Login
+    </button>
+    <a class="btn btn-lg btn-primary" href="{{path('app_register')}}">
+        S'enregistrer
+    </a>
+</form>
+{% endblock %}

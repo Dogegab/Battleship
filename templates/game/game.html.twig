@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Battleship (Bataille navale)</h1>
+
+<p>Battleship est un jeu de stratégie où deux joueurs s'affrontent. Chaque joueur dispose d'une grille sur laquelle il place ses navires, et l'objectif est de localiser et de couler les navires adverses avant que les siens ne soient détruits.</p>
+
+<h3>Règles du jeu :</h3>
+
+<p>Grilles : Chaque joueur a une grille de jeu sur laquelle il place ses navires. La grille est composée de cases, généralement représentées par des coordonnées (lettres pour les colonnes et chiffres pour les lignes).</p>
+
+<p>Navires : Chaque joueur place ses navires sur sa grille avant le début du jeu. Les navires ont différentes tailles : par exemple, un porte-avions peut occuper 5 cases, tandis qu'un destroyer n'en occupe que 3.</p>
+
+<h3>Déroulement du jeu :</h3>
+
+<p>Les joueurs alternent pour choisir une case de la grille adverse à attaquer en spécifiant les coordonnées (par exemple, "A3").
+Si la case attaquée contient une partie d'un navire, c'est un "touché".
+Lorsqu'un navire est touché sur toutes ses parties, il est "coulé".
+Le premier joueur à couler tous les navires adverses remporte la partie.
+Stratégie : Pour gagner, les joueurs doivent utiliser la logique et la stratégie pour découvrir la position des navires adverses tout en protégeant les leurs. La mémoire et la déduction sont essentielles pour localiser efficacement les navires ennemis.</p>
+
+<p>Victoire : Le joueur qui parvient à couler tous les navires adverses en premier est déclaré vainqueur.</p>
+
+<p>C'est un jeu amusant qui combine chance, stratégie et anticipation. Bonne partie !</p>
+
+<a class="btn btn-lg btn-primary" href="{{ path('new_game') }}">Commencer une partie</a>
+{% endblock %}

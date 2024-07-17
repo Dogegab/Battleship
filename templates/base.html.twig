@@ -8,10 +8,37 @@
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% block importmap %}
+            {{ importmap('app') }}
+            {% endblock %}
+        <script>
+            function closeFlashMessage(index) {
+                const flashMessage = document.getElementById('flash-message-' + index);
+                if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                }
+            }
+        </script>
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% if app.user %}
+            {% include 'include/_navbar.html.twig' %}
+        {% endif %}
+        <div class="container">
+            {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}" id="flash-message-{{ loop.index }}">
+                            {{ message }}
+                            <div>
+                            <button type="button" class="btn-close" aria-label="Close" onclick="closeFlashMessage({{ loop.index }})"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
