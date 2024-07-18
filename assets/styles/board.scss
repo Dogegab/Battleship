@@ -1,3 +1,17 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.iapanel, .playerpanel {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+
 .board {
     position: relative;
     width: 400px; /* Largeur de votre board, ajustez selon vos besoins */
@@ -8,7 +22,6 @@
     grid-template-columns: repeat(10, 1fr); /* Répétez pour la taille de votre grille */
     grid-gap: 2px; /* Espacement entre les tuiles */
     margin-bottom: 20px;
-    
 }
 
 .tile {
@@ -68,33 +81,75 @@
     background-size:cover;
 }
 
-.tile img{
-
+.tile img {
     height: 100%;
     position:absolute;
     z-index: 0;
 }
 
-.tile .V{
+.tile .V {
     top:0;
 }
 
-.tile .H{
+.tile .H {
     left:0;
 }
 
 .tile .carrier {
     width: 500%;
 }
+
 .tile .battleship {
-    width: 400%
+    width: 400%;
 }
+
 .tile .Cruiser {
-    width: 300%
+    width: 300%;
 }
+
 .tile .submarine {
-    width:300%
+    width: 300%;
 }
+
 .tile .destroyer {
-    width: 200%
+    width: 200%;
+}
+
+.ship-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.orientation-toggle {
+    margin-top: 10px;
+}
+
+.ship {
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.ship.selected {
+    border: 2px solid blue;
+}
+
+.ship-container {
+    width: 100px; /* Largeur souhaitée pour chaque conteneur de navire */
+    height: auto; /* Ajuster la hauteur automatiquement en fonction de la largeur */
+    overflow: hidden; /* Masquer tout contenu dépassant de la taille spécifiée */
+    position: relative; /* Permet de positionner les navires à l'intérieur */
+}
+
+.ship-container img {
+    width: 100%; /* Fait en sorte que l'image remplisse complètement le conteneur */
+    height: auto; /* Ajuste la hauteur automatiquement pour conserver les proportions */
+    display: block; /* Assure que l'image se comporte comme un élément de bloc */
+}
+
+.vertical img {
+    transform: rotate(90deg);
+    left: 50%;
 }

@@ -1,57 +1,173 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Combattez</h1>
+    <h1>Placez vos navires !</h1>
 
-    <div>
-        <h2>Votre flotte</h2>
-        <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
-            {% for tile in playerBoard.tiles %}
-                <div class="tile {% if tile.status == 'miss' %}miss{% elseif tile.status == 'damaged' %}damaged{% elseif tile.status == 'targeted' %}targeted{% endif %}">
-                    {% for ship in playerBoard.ships %}
-                        {% set startRow = ship.startRow %}
-                        {% set startCol = ship.startCol %}
-                        {% set size = ship.size %}
+    <div class="container">
+         <div class="playerpanel">
+            <div class="ship-table">
+                <div class="ship-container">
+                    <img src="{{ asset('uploads/images/posters/carrierSide.svg') }}" alt="Carrier" class="ship" data-type="carrier">
+                </div>
+                <div class="ship-container">
+                    <img src="{{ asset('uploads/images/posters/battleshipSide.svg') }}" alt="Battleship" class="ship" data-type="battleship">
+                </div>
+                <div class="ship-container">
+                    <img src="{{ asset('uploads/images/posters/cruiserSide.svg') }}" alt="Cruiser" class="ship" data-type="cruiser">
+                </div>
+                <div class="ship-container">
+                    <img src="{{ asset('uploads/images/posters/submarineSide.svg') }}" alt="Submarine" class="ship" data-type="submarine">
+                </div>
+                <div class="ship-container">
+                    <img src="{{ asset('uploads/images/posters/destroyerSide.svg') }}" alt="Destroyer" class="ship" data-type="destroyer">
+                </div>
+                <button class="orientation-toggle" onclick="toggleOrientation()">Changer l'orientation</button>
+            </div>
 
-                        {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
-                        {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
-
-                        {% if (ship.orientation == 'H' and tile.x == startRow and tile.y >= startCol and tile.y <= endCol) or
-                              (ship.orientation == 'V' and tile.y == startCol and tile.x >= startRow and tile.x <= endRow) %}
-                            {% if (ship.orientation == 'H' and tile.y == startCol) or
-                                  (ship.orientation == 'V' and tile.x == startRow) %}
-                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
-                            {% endif %}
-                        {% endif %}
+            <div>
+                <h2>Votre flotte</h2>
+                <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
+                    {% for tile in playerBoard.tiles %}
+                        <div class="tile tile{{ tile.status }}" data-x="{{ tile.x }}" data-y="{{ tile.y }}">
+                        </div>
                     {% endfor %}
                 </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
 
-    <div>
-        <h2>Flotte ennemie</h2>
-        <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
-            {% for tile in iaBoard.tiles %}
-                <div class="tile {% if tile.status == 'miss' %}miss{% elseif tile.status == 'damaged' %}damaged{% elseif tile.status == 'targeted' %}targeted{% endif %}">
-                    {% for ship in iaBoard.ships %}
-                        {% set startRow = ship.startRow %}
-                        {% set startCol = ship.startCol %}
-                        {% set size = ship.size %}
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedShip = null;
+    let orientation = 'H'; // Orientation par défaut
 
-                        {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
-                        {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
+    function toggleOrientation() {
+        orientation = (orientation === 'H') ? 'V' : 'H';
+    }
 
-                        {% if (ship.orientation == 'H' and tile.x == startRow and tile.y >= startCol and tile.y <= endCol) or
-                              (ship.orientation == 'V' and tile.y == startCol and tile.x >= startRow and tile.x <= endRow) %}
-                            {% if (ship.orientation == 'H' and tile.y == startCol) or
-                                  (ship.orientation == 'V' and tile.x == startRow) %}
-                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+    // Fonction pour obtenir la taille du navire en fonction de son type
+    function getSizeByShipType(shipType) {
+        switch (shipType) {
+            case 'carrier':
+                return 5;
+            case 'battleship':
+                return 4;
+            case 'cruiser':
+                return 3;
+            case 'submarine':
+                return 3;
+            case 'destroyer':
+                return 2;
+            default:
+                return 0; // Valeur par défaut, si nécessaire
+        }
+    }
+
+    // Événement pour sélectionner un navire dans le panneau des navires
+    document.querySelectorAll('.ship').forEach(ship => {
+        ship.addEventListener('click', function() {
+            if (selectedShip) {
+                selectedShip.classList.remove('selected');
+            }
+            selectedShip = ship;
+            ship.classList.add('selected');
+        });
+    });
+
+    // Événement pour placer un navire sur la grille du joueur
+    document.querySelectorAll('.tile').forEach(tile => {
+        tile.addEventListener('click', function() {
+            if (selectedShip) {
+                const shipType = selectedShip.getAttribute('data-type');
+                const x = parseInt(tile.getAttribute('data-x')); // Coordonnée x de la tuile
+                const y = parseInt(tile.getAttribute('data-y')); // Coordonnée y de la tuile
+                const size = getSizeByShipType(shipType); // Taille du navire
+
+                // Vérification de la disponibilité de l'emplacement
+                let validPlacement = true;
+
+                if(toggleOrientation === )
+
+                if (orientation === 'H') {
+                    // Vérifier si le navire dépasse à droite
+                    if (y + size > 11) {
+                        validPlacement = false;
+                    }
+                    // Vérifier si une tuile est déjà occupée
+                    for (let i = y; i < y + size; i++) {
+                        const tile = document.querySelector(`.tile[data-x="${x}"][data-y="${i}"]`);
+                        if (tile.classList.contains('full')) {
+                            validPlacement = false;
+                            break;
+                        }
+                    }
+                } else {
+                    // Vérifier si le navire dépasse vers le bas
+                    if (x + size > 11) {
+                        validPlacement = false;
+                    }
+                    // Vérifier si une tuile est déjà occupée
+                    for (let i = x; i < x + size; i++) {
+                        const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${y}"]`);
+                        if (tile.classList.contains('full')) {
+                            validPlacement = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (!validPlacement) {
+                    alert('Le navire dépasse du plateau ou chevauche un autre navire ! Sélectionnez une autre case.');
+                    return;
+                }
+
+                // Ajouter la classe 'full' à toutes les tuiles occupées par le navire
+                markTiles(shipType, x, y, size);
+
+                // Créer une image de navire avec l'orientation correcte
+                const shipImg = document.createElement('img');
+                shipImg.src = `/uploads/images/posters/${shipType}Up.svg`;
+                shipImg.alt = shipType;
+                shipImg.classList.add(shipType.toLowerCase(), orientation);
+
+                // Ajouter l'image à la tuile
+                tile.innerHTML = ''; // Effacer le contenu existant au cas où
+                tile.appendChild(shipImg);
+
+                // Ajouter la classe 'full' à la tuile actuelle
+                tile.classList.add('full');
+
+                // TODO: Envoyer les données de position au serveur
+
+                // Retirer le navire du panneau des navires
+                selectedShip.remove();
+                selectedShip = null;
+            }
+        });
+    });
+
+    // Fonction pour marquer toutes les tuiles occupées par le navire comme 'full'
+    function markTiles(shipType, startX, startY, size) {
+        const boardSize = 10; // Taille du plateau de jeu
+        const tiles = document.querySelectorAll('.tile');
+
+        if (orientation === 'H') {
+            for (let i = startY; i < startY + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${startX}"][data-y="${i}"]`);
+                tile.classList.add('full');
+            }
+        } else { // orientation === 'V'
+            for (let i = startX; i < startX + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${startY}"]`);
+                tile.classList.add('full');
+            }
+        }
+    }
+
+    // Événement pour basculer l'orientation
+    document.querySelector('.orientation-toggle').addEventListener('click', function() {
+        toggleOrientation();
+    });
+});
+    </script>
 {% endblock %}

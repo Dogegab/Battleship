@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Placez vos navires !</h1>
+
+    <div class="container">
+        <div class="iapanel">
+            <h2>Flotte ennemie</h2>
+            <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
+                {% for tile in iaBoard.tiles %}
+                    <div class="tile">
+                        {% for ship in iaBoard.ships %}
+                            {% set startRow = ship.startRow %}
+                            {% set startCol = ship.startCol %}
+                            {% set size = ship.size %}
+
+                            {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
+                            {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
+
+                            {% if (ship.orientation == 'H' and tile.x == startRow and tile.y >= startCol and tile.y <= endCol) or
+                                  (ship.orientation == 'V' and tile.y == startCol and tile.x >= startRow and tile.x <= endRow) %}
+                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="playerpanel">
+            <h2>Votre flotte</h2>
+            <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
+                {% for tile in playerBoard.tiles %}
+                    <div class="tile" data-x="{{ tile.x }}" data-y="{{ tile.y }}">
+                        {% for ship in playerBoard.ships %}
+                            {% set startRow = ship.startRow %}
+                            {% set startCol = ship.startCol %}
+                            {% set size = ship.size %}
+                            {% set endCol = startCol + (ship.orientation == 'H' ? size - 1 : 0) %}
+                            {% set endRow = startRow + (ship.orientation == 'V' ? size - 1 : 0) %}
+                            
+                            {% if (ship.orientation == 'H' and tile.x == startRow and tile.y == startCol) or
+                                  (ship.orientation == 'V' and tile.x == startRow and tile.y == startCol) %}
+                                <img src="{{ asset('uploads/images/posters/' ~ ship.type | lower ~ 'Up.svg') }}" alt="{{ ship.type }}" class="{{ ship.type | lower }} {{ ship.orientation }}">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="ship-controls">
+        <div class="ship-toggle-img">
+            <button class="orientation-toggle" id="toggleOrientationButton">Changer l'orientation</button>
+            <span id="orientationMessage">Vous êtes actuellement sur un placement horizontal</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedShip = null;
+            let orientation = 'H'; // Orientation par défaut
+
+            function toggleOrientation() {
+                orientation = (orientation === 'H') ? 'V' : 'H';
+                updateOrientationMessage(); // Mettre à jour le message d'orientation
+            }
+
+            // Fonction pour obtenir la taille du navire en fonction de son type
+            function getSizeByShipType(shipType) {
+                switch (shipType) {
+                    case 'carrier':
+                        return 5;
+                    case 'battleship':
+                        return 4;
+                    case 'cruiser':
+                        return 3;
+                    case 'submarine':
+                        return 3;
+                    case 'destroyer':
+                        return 2;
+                    default:
+                        return 0; // Valeur par défaut, si nécessaire
+                }
+            }
+
+            // Mettre à jour le message d'orientation
+            function updateOrientationMessage() {
+                const orientationMessage = document.getElementById('orientationMessage');
+                if (orientation === 'H') {
+                    orientationMessage.textContent = "Vous êtes actuellement sur un placement horizontal";
+                } else {
+                    orientationMessage.textContent = "Vous êtes actuellement sur un placement vertical";
+                }
+            }
+
+            // Gestion de l'événement pour le bouton de changement d'orientation
+            const toggleOrientationButton = document.getElementById('toggleOrientationButton');
+            if (toggleOrientationButton) {
+                toggleOrientationButton.addEventListener('click', function() {
+                    toggleOrientation(); // Appeler la fonction pour basculer l'orientation
+                });
+            }
+
+            // Événement pour sélectionner un navire dans le panneau des navires
+            document.querySelectorAll('.tile').forEach(tile => {
+                tile.addEventListener('click', function() {
+                    if (selectedShip) {
+                        const shipType = selectedShip.getAttribute('data-type');
+                        const x = parseInt(tile.getAttribute('data-x')); // Coordonnée x de la tuile
+                        const y = parseInt(tile.getAttribute('data-y')); // Coordonnée y de la tuile
+                        const size = getSizeByShipType(shipType); // Taille du navire
+
+                        // Vérification de la disponibilité de l'emplacement
+                        let validPlacement = true;
+
+                        if (orientation === 'H') {
+                            // Vérifier si le navire dépasse à droite
+                            if (y + size > 11) {
+                                validPlacement = false;
+                            }
+                        } else {
+                            // Vérifier si le navire dépasse vers le bas
+                            if (x + size > 11) {
+                                validPlacement = false;
+                            }
+                        }
+
+                        if (!validPlacement) {
+                            alert('Le navire dépasse du plateau ! Sélectionnez une autre case.');
+                            return;
+                        }
+
+                        // Créer une image de navire avec l'orientation correcte
+                        const shipImg = document.createElement('img');
+                        shipImg.src = `/uploads/images/posters/${shipType}Up.svg`;
+                        shipImg.alt = shipType;
+                        shipImg.classList.add(shipType.toLowerCase(), orientation);
+
+                        // Ajouter l'image à la tuile
+                        tile.innerHTML = ''; // Effacer le contenu existant au cas où
+                        tile.appendChild(shipImg);
+
+                        // TODO: Envoyer les données de position au serveur
+
+                        // Retirer le navire du panneau des navires
+                        selectedShip.remove();
+                        selectedShip = null;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
