@@ -4,7 +4,7 @@
     <h1>Placez vos navires !</h1>
 
     <div class="container">
-         <div class="playerpanel">
+        <div class="playerpanel">
             <div class="ship-table">
                 <div class="ship-container">
                     <img src="{{ asset('uploads/images/posters/carrierSide.svg') }}" alt="Carrier" class="ship" data-type="carrier">
@@ -21,14 +21,14 @@
                 <div class="ship-container">
                     <img src="{{ asset('uploads/images/posters/destroyerSide.svg') }}" alt="Destroyer" class="ship" data-type="destroyer">
                 </div>
-                <button class="orientation-toggle" onclick="toggleOrientation()">Changer l'orientation</button>
+                <button class="orientation-toggle">Changer l'inclinaison d'un navire sélectionné</button>
             </div>
 
             <div>
                 <h2>Votre flotte</h2>
                 <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">
                     {% for tile in playerBoard.tiles %}
-                        <div class="tile tile{{ tile.status }}" data-x="{{ tile.x }}" data-y="{{ tile.y }}">
+                        <div class="tile {% if tile.status == 'full' %}full{% endif %}" data-x="{{ tile.x }}" data-y="{{ tile.y }}">
                         </div>
                     {% endfor %}
                 </div>
@@ -36,16 +36,35 @@
         </div>
     </div>
 
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     let selectedShip = null;
-    let orientation = 'H'; // Orientation par défaut
 
     function toggleOrientation() {
-        orientation = (orientation === 'H') ? 'V' : 'H';
+        if (selectedShip) {
+            const parentTile = selectedShip.parentElement;
+            const shipType = selectedShip.getAttribute('data-type');
+            const x = parseInt(selectedShip.getAttribute('data-x'));
+            const y = parseInt(selectedShip.getAttribute('data-y'));
+            const size = getSizeByShipType(shipType);
+
+            // Récupérer l'orientation actuelle du navire
+            const isVertical = parentTile.classList.contains('vertical');
+
+            // Marquer les cases comme vide pour l'ancienne orientation
+            markTilesEmpty(shipType, x, y, size, isVertical);
+
+            // Inverser l'orientation du navire
+            parentTile.classList.toggle('vertical');
+
+            // Mettre à jour l'attribut 'data-orientation'
+            selectedShip.setAttribute('data-orientation', parentTile.classList.contains('vertical') ? 'V' : 'H');
+
+            // Mettre à jour l'état des tuiles en fonction de la nouvelle orientation
+            markTiles(shipType, x, y, size, !isVertical);
+        }
     }
 
-    // Fonction pour obtenir la taille du navire en fonction de son type
     function getSizeByShipType(shipType) {
         switch (shipType) {
             case 'carrier':
@@ -59,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'destroyer':
                 return 2;
             default:
-                return 0; // Valeur par défaut, si nécessaire
+                return 0;
         }
     }
 
@@ -68,50 +87,53 @@ document.addEventListener('DOMContentLoaded', function() {
         ship.addEventListener('click', function() {
             if (selectedShip) {
                 selectedShip.classList.remove('selected');
+                clearTileHighlights();
             }
             selectedShip = ship;
             ship.classList.add('selected');
+            highlightTiles(selectedShip);
         });
     });
 
     // Événement pour placer un navire sur la grille du joueur
     document.querySelectorAll('.tile').forEach(tile => {
         tile.addEventListener('click', function() {
-            if (selectedShip) {
+            if (selectedShip && !tile.classList.contains('full')) {
                 const shipType = selectedShip.getAttribute('data-type');
-                const x = parseInt(tile.getAttribute('data-x')); // Coordonnée x de la tuile
-                const y = parseInt(tile.getAttribute('data-y')); // Coordonnée y de la tuile
-                const size = getSizeByShipType(shipType); // Taille du navire
+                const x = parseInt(tile.getAttribute('data-x'));
+                const y = parseInt(tile.getAttribute('data-y'));
+                const size = getSizeByShipType(shipType);
+                let orientation = selectedShip.getAttribute('data-orientation');
 
-                // Vérification de la disponibilité de l'emplacement
+                // Si l'orientation n'est pas définie, la définir comme horizontale par défaut
+                if (!orientation) {
+                    orientation = 'H';
+                    selectedShip.setAttribute('data-orientation', orientation);
+                }
+
                 let validPlacement = true;
-
-                if(toggleOrientation === )
-
                 if (orientation === 'H') {
-                    // Vérifier si le navire dépasse à droite
-                    if (y + size > 11) {
+                    if (y + size > 10) {
                         validPlacement = false;
-                    }
-                    // Vérifier si une tuile est déjà occupée
-                    for (let i = y; i < y + size; i++) {
-                        const tile = document.querySelector(`.tile[data-x="${x}"][data-y="${i}"]`);
-                        if (tile.classList.contains('full')) {
-                            validPlacement = false;
-                            break;
+                    } else {
+                        for (let i = y; i < y + size; i++) {
+                            const tile = document.querySelector(`.tile[data-x="${x}"][data-y="${i}"]`);
+                            if (tile.classList.contains('full') || tile.querySelector('img')) {
+                                validPlacement = false;
+                                break;
+                            }
                         }
                     }
-                } else {
-                    // Vérifier si le navire dépasse vers le bas
-                    if (x + size > 11) {
+                } else { // Orientation 'V'
+                    if (x + size > 10) {
                         validPlacement = false;
-                    }
-                    // Vérifier si une tuile est déjà occupée
-                    for (let i = x; i < x + size; i++) {
-                        const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${y}"]`);
-                        if (tile.classList.contains('full')) {
-                            validPlacement = false;
-                            break;
+                    } else {
+                        for (let i = x; i < x + size; i++) {
+                            const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${y}"]`);
+                            if (tile.classList.contains('full') || tile.querySelector('img')) {
+                                validPlacement = false;
+                                break;
+                            }
                         }
                     }
                 }
@@ -121,53 +143,107 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Ajouter la classe 'full' à toutes les tuiles occupées par le navire
-                markTiles(shipType, x, y, size);
+                // Marquer les cases selon l'orientation choisie
+                markTiles(shipType, x, y, size, orientation);
 
-                // Créer une image de navire avec l'orientation correcte
+                // Créer l'élément img du navire et le placer sur la case
                 const shipImg = document.createElement('img');
                 shipImg.src = `/uploads/images/posters/${shipType}Up.svg`;
                 shipImg.alt = shipType;
-                shipImg.classList.add(shipType.toLowerCase(), orientation);
+                shipImg.classList.add(shipType.toLowerCase());
+                shipImg.setAttribute('data-type', shipType);
+                shipImg.setAttribute('data-x', x);
+                shipImg.setAttribute('data-y', y);
+                shipImg.setAttribute('data-orientation', orientation);
 
-                // Ajouter l'image à la tuile
-                tile.innerHTML = ''; // Effacer le contenu existant au cas où
+                tile.innerHTML = '';
                 tile.appendChild(shipImg);
-
-                // Ajouter la classe 'full' à la tuile actuelle
                 tile.classList.add('full');
 
-                // TODO: Envoyer les données de position au serveur
-
-                // Retirer le navire du panneau des navires
+                // Réinitialiser la sélection du navire et les mises en évidence des cases
                 selectedShip.remove();
                 selectedShip = null;
+                clearTileHighlights();
             }
         });
     });
 
-    // Fonction pour marquer toutes les tuiles occupées par le navire comme 'full'
-    function markTiles(shipType, startX, startY, size) {
-        const boardSize = 10; // Taille du plateau de jeu
-        const tiles = document.querySelectorAll('.tile');
-
-        if (orientation === 'H') {
-            for (let i = startY; i < startY + size; i++) {
-                const tile = document.querySelector(`.tile[data-x="${startX}"][data-y="${i}"]`);
-                tile.classList.add('full');
+    // Sélection d'un navire déjà placé sur la carte
+    document.querySelectorAll('.tile').forEach(tile => {
+        tile.addEventListener('click', function() {
+            if (tile.classList.contains('full')) {
+                const placedShip = tile.querySelector('img');
+                if (selectedShip) {
+                    selectedShip.classList.remove('selected');
+                    clearTileHighlights();
+                }
+                selectedShip = placedShip;
+                placedShip.classList.add('selected');
+                highlightTiles(selectedShip);
             }
-        } else { // orientation === 'V'
+        });
+    });
+
+    function markTiles(shipType, startX, startY, size, isVertical) {
+        if (isVertical) {
             for (let i = startX; i < startX + size; i++) {
                 const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${startY}"]`);
+                tile.classList.add('full');
+            }
+        } else { // Orientation horizontale (par défaut 'H')
+            for (let i = startY; i < startY + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${startX}"][data-y="${i}"]`);
                 tile.classList.add('full');
             }
         }
     }
 
-    // Événement pour basculer l'orientation
+    function markTilesEmpty(shipType, startX, startY, size, isVertical) {
+        if (isVertical) {
+            for (let i = startX; i < startX + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${startY}"]`);
+                tile.classList.remove('full');
+            }
+        } else { // Orientation horizontale (par défaut 'H')
+            for (let i = startY; i < startY + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${startX}"][data-y="${i}"]`);
+                tile.classList.remove('full');
+            }
+        }
+    }
+
+    function highlightTiles(ship) {
+        const shipType = ship.getAttribute('data-type');
+        const x = parseInt(ship.getAttribute('data-x'));
+        const y = parseInt(ship.getAttribute('data-y'));
+        const size = getSizeByShipType(shipType);
+        const orientation = ship.getAttribute('data-orientation');
+
+        clearTileHighlights();
+
+        if (orientation === 'H') {
+            for (let i = y; i < y + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${x}"][data-y="${i}"]`);
+                tile.classList.add('selected');
+            }
+        } else { // Orientation 'V'
+            for (let i = x; i < x + size; i++) {
+                const tile = document.querySelector(`.tile[data-x="${i}"][data-y="${y}"]`);
+                tile.classList.add('selected');
+            }
+        }
+    }
+
+    function clearTileHighlights() {
+        document.querySelectorAll('.tile.selected').forEach(tile => {
+            tile.classList.remove('selected');
+        });
+    }
+
     document.querySelector('.orientation-toggle').addEventListener('click', function() {
         toggleOrientation();
     });
 });
-    </script>
+</script>
+
 {% endblock %}

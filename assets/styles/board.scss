@@ -85,6 +85,7 @@
     height: 100%;
     position:absolute;
     z-index: 0;
+    left: 0;
 }
 
 .tile .V {
@@ -150,6 +151,7 @@
 }
 
 .vertical img {
-    transform: rotate(90deg);
+    transform: rotate(90deg) translateY(-50%);
+    transform-origin: top left;
     left: 50%;
 }
