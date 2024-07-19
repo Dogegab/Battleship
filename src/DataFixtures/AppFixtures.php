@@ -88,11 +88,11 @@ class AppFixtures extends Fixture
         private function createShips(Board $board, ObjectManager $manager): void
         {
             $shipsData = [
-                ['type' => 'Carrier', 'size' => 5, 'startRow' => 1, 'startCol' => 1, 'orientation' => 'H'],
-                ['type' => 'Battleship', 'size' => 4, 'startRow' => 2, 'startCol' => 1, 'orientation' => 'H'],
-                ['type' => 'Cruiser', 'size' => 3, 'startRow' => 3, 'startCol' => 1, 'orientation' => 'H'],
-                ['type' => 'Submarine', 'size' => 3, 'startRow' => 4, 'startCol' => 1, 'orientation' => 'H'],
-                ['type' => 'Destroyer', 'size' => 2, 'startRow' => 5, 'startCol' => 1, 'orientation' => 'H'],
+                ['type' => 'carrier', 'size' => 5, 'startRow' => 1, 'startCol' => 1, 'orientation' => 'H'],
+                ['type' => 'battleship', 'size' => 4, 'startRow' => 2, 'startCol' => 1, 'orientation' => 'H'],
+                ['type' => 'cruiser', 'size' => 3, 'startRow' => 3, 'startCol' => 1, 'orientation' => 'H'],
+                ['type' => 'submarine', 'size' => 3, 'startRow' => 4, 'startCol' => 1, 'orientation' => 'H'],
+                ['type' => 'destroyer', 'size' => 2, 'startRow' => 5, 'startCol' => 1, 'orientation' => 'H'],
             ];
      
             foreach ($shipsData as $shipData) {

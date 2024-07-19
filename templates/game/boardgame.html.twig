@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Placez vos navires !</h1>
+    <h1>Combattez !</h1>
 
     <div class="container">
         <div class="iapanel">
@@ -33,25 +33,6 @@
         </div>
 
         <div class="playerpanel">
-            <div class="ship-table">
-                <div class="ship-container">
-                    <img src="{{ asset('uploads/images/posters/carrierSide.svg') }}" alt="Carrier" class="ship" data-type="carrier">
-                </div>
-                <div class="ship-container">
-                    <img src="{{ asset('uploads/images/posters/battleshipSide.svg') }}" alt="Battleship" class="ship" data-type="battleship">
-                </div>
-                <div class="ship-container">
-                    <img src="{{ asset('uploads/images/posters/cruiserSide.svg') }}" alt="Cruiser" class="ship" data-type="cruiser">
-                </div>
-                <div class="ship-container">
-                    <img src="{{ asset('uploads/images/posters/submarineSide.svg') }}" alt="Submarine" class="ship" data-type="submarine">
-                </div>
-                <div class="ship-container">
-                    <img src="{{ asset('uploads/images/posters/destroyerSide.svg') }}" alt="Destroyer" class="ship" data-type="destroyer">
-                </div>
-                <button class="orientation-toggle" onclick="toggleOrientation()">Changer l'orientation</button>
-            </div>
-
             <div>
                 <h2>Votre flotte</h2>
                 <div class="board" style="background-image: url('{{ asset('uploads/images/posters/BoardBackground.png') }}')">

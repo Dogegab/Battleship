@@ -9,8 +9,10 @@
 .iapanel, .playerpanel {
     display: flex;
     flex-direction: row-reverse;
-    align-items: center;
+    align-items: baseline;
 }
+
+
 
 .board {
     position: relative;
@@ -154,4 +156,19 @@
     transform: rotate(90deg) translateY(-50%);
     transform-origin: top left;
     left: 50%;
+}
+
+.ship-table {
+    margin-left:1rem;
+}
+.ship-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.loginfield input {
+
+    width:20rem !important;
 }

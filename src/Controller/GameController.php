@@ -83,4 +83,17 @@ class GameController extends AbstractController
             'iaBoard' => $enemyBoard,
         ]);
     }
+
+    #[Route('/game/boardgame', name:'launched_game')]
+    public function fight(
+        BoardRepository $boardRepository
+    ): Response {
+        $playerBoard = $boardRepository->findOneBy(['name' => 'player']);
+        $enemyBoard = $boardRepository->findOneBy(['name' => 'ia']);
+
+        return $this->render('game/boardgame.html.twig', [
+            'playerBoard' => $playerBoard,
+            'iaBoard' => $enemyBoard
+        ]);
+    }
 }
